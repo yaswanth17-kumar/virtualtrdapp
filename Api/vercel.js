@@ -1,0 +1,4 @@
+{
+  "functions": { "api/index.js": { "includeFiles": "index.html" } },
+  "rewrites": [{ "source": "/(.*)", "destination": "/api" }]
+}
