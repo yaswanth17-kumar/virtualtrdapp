@@ -3,391 +3,1092 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>ApexTrader — Virtual Trading Web App</title>
+  <title>ApexTrader — Complete Virtual Trading Platform</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
+  <script>
+    const API_BASE_URL = (
+      window.location.hostname === 'dwijesh2911-cyber.github.io' ||
+      window.location.protocol === 'file:' ||
+      window.location.port === '5500'
+    )
+      ? 'https://virtual-stock-trading-app-b2c3.onrender.com/api'
+      : '/api';
+  </script>
   <style>
-    :root {
-      --bg: #070b14;
-      --card: #0f172a;
-      --card-2: #162038;
-      --border: #24324d;
-      --text: #f1f5f9;
-      --muted: #94a3b8;
-      --blue: #2563eb;
-      --green: #16a34a;
-      --red: #dc2626;
-    }
-
-    * { box-sizing: border-box; margin: 0; padding: 0; font-family: system-ui, -apple-system, sans-serif; }
-    body { background: var(--bg); color: var(--text); padding: 20px; line-height: 1.5; }
-    .wrap { max-width: 1120px; margin: 0 auto; }
-
-    header {
-      display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center;
-      gap: 14px; background: var(--card); border: 1px solid var(--border);
-      padding: 18px 22px; border-radius: 14px; margin-bottom: 20px;
-    }
-    .brand h1 { font-size: 1.35rem; }
-    .brand p { color: var(--muted); font-size: 0.85rem; }
-
-    .stats { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; }
-    .stat {
-      background: var(--card-2); border: 1px solid var(--border);
-      padding: 10px 14px; border-radius: 10px;
-    }
-    .stat small { display: block; color: var(--muted); font-size: 0.74rem; }
-    .stat strong { font-size: 1.02rem; }
-
-    .grid { display: grid; grid-template-columns: 1.3fr 1fr; gap: 20px; margin-bottom: 20px; }
-    @media (max-width: 840px) { .grid { grid-template-columns: 1fr; } }
-
-    .panel {
-      background: var(--card); border: 1px solid var(--border);
-      border-radius: 14px; padding: 18px;
-    }
-    .panel h2 { font-size: 1.05rem; margin-bottom: 14px; }
-
-    table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
-    th, td { text-align: left; padding: 10px 8px; border-bottom: 1px solid var(--border); }
-    th { color: var(--muted); font-size: 0.78rem; font-weight: 600; }
-
-    .up { color: #4ade80; }
-    .down { color: #f87171; }
-
-    .field { margin-bottom: 13px; }
-    label { display: block; font-size: 0.84rem; color: var(--muted); margin-bottom: 6px; }
-    select, input {
-      width: 100%; padding: 10px 12px; border-radius: 8px;
-      background: var(--card-2); border: 1px solid var(--border); color: var(--text);
-    }
-
-    .estimate {
-      display: flex; justify-content: space-between; align-items: center;
-      background: var(--card-2); border: 1px solid var(--border);
-      padding: 11px 12px; border-radius: 8px; margin-bottom: 14px; font-size: 0.9rem;
-    }
-
-    .btn-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-    button {
-      padding: 11px 14px; border: none; border-radius: 8px;
-      font-weight: 700; cursor: pointer; color: #fff; transition: opacity 0.15s;
-    }
-    button:hover { opacity: 0.92; }
-    .buy-btn { background: var(--green); }
-    .sell-btn { background: var(--red); }
-    .reset-btn { background: var(--blue); padding: 9px 14px; font-size: 0.82rem; }
-    .pick-btn { background: var(--card-2); border: 1px solid var(--border); padding: 6px 10px; font-size: 0.78rem; }
-
-    .status { margin-top: 10px; font-size: 0.86rem; min-height: 20px; }
-    .muted-row { color: var(--muted); text-align: center; padding: 14px 8px; }
+    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: #0b0e14; }
+    ::-webkit-scrollbar-thumb { background: #1e293b; border-radius: 4px; }
+    ::-webkit-scrollbar-thumb:hover { background: #334155; }
   </style>
 </head>
-<body>
-  <div class="wrap">
-    <header>
-      <div class="brand">
-        <h1>ApexTrader</h1>
-        <p>Instant Virtual Trading Dashboard (No Login Required)</p>
+<body class="bg-tradeDark text-slate-200 antialiased min-h-screen flex flex-col">
+  <!-- TOP HEADER / TICKER BAR -->
+  <header class="bg-panelDark border-b border-borderDark px-4 py-3 flex items-center justify-between sticky top-0 z-50">
+    <div class="flex items-center gap-3">
+      <div class="h-9 w-9 rounded-lg bg-gradient-to-tr from-accentBlue to-indigo-600 flex items-center justify-center font-bold text-white shadow-lg shadow-blue-500/20">
+        <i class="fa-solid fa-chart-line text-lg"></i>
       </div>
-      <div class="stats">
-        <div class="stat">
-          <small>Available Cash</small>
-          <strong id="cashVal">₹10,00,000.00</strong>
-        </div>
-        <div class="stat">
-          <small>Holdings Value</small>
-          <strong id="holdingsVal">₹0.00</strong>
-        </div>
-        <div class="stat">
-          <small>Net Worth</small>
-          <strong id="netWorthVal">₹10,00,000.00</strong>
-        </div>
-        <button type="button" class="reset-btn" onclick="resetPortfolio()">Reset ₹10L</button>
-      </div>
-    </header>
-
-    <div class="grid">
-      <div class="panel">
-        <h2>Market Watch</h2>
-        <table>
-          <thead>
-            <tr>
-              <th>Symbol</th>
-              <th>Company</th>
-              <th>Price</th>
-              <th>Change</th>
-              <th>Trade</th>
-            </tr>
-          </thead>
-          <tbody id="marketBody"></tbody>
-        </table>
-      </div>
-
-      <div class="panel">
-        <h2>Place Order</h2>
-        <div class="field">
-          <label for="symSelect">Stock</label>
-          <select id="symSelect" onchange="updateEstimate()"></select>
-        </div>
-        <div class="field">
-          <label for="qtyInput">Quantity</label>
-          <input id="qtyInput" type="number" min="1" value="1" oninput="updateEstimate()" />
-        </div>
-        <div class="estimate">
-          <span>Estimated Order Value</span>
-          <strong id="estTotal">₹0.00</strong>
-        </div>
-        <div class="btn-row">
-          <button type="button" class="buy-btn" onclick="executeOrder('BUY')">Buy</button>
-          <button type="button" class="sell-btn" onclick="executeOrder('SELL')">Sell</button>
-        </div>
-        <div class="status" id="orderStatus"></div>
+      <div>
+        <h1 class="text-lg font-black tracking-wide bg-gradient-to-r from-blue-400 to-indigo-300 bg-clip-text text-transparent">ApexTrader</h1>
+        <p class="text-[10px] text-slate-400 font-mono">EDUCATIONAL TRADING SIMULATOR</p>
       </div>
     </div>
 
-    <div class="grid">
-      <div class="panel">
-        <h2>Your Holdings</h2>
-        <table>
-          <thead>
-            <tr>
-              <th>Symbol</th>
-              <th>Qty</th>
-              <th>Avg Price</th>
-              <th>Current Value</th>
-              <th>P&amp;L</th>
-            </tr>
-          </thead>
-          <tbody id="holdingsBody"></tbody>
-        </table>
+    <!-- QUICK STATS RIBBON -->
+    <div class="hidden lg:flex items-center gap-6 text-xs font-mono">
+      <div class="border-l border-borderDark pl-4">
+        <span class="text-slate-400">NET WORTH</span>
+        <div id="statNetWorth" class="text-sm font-bold text-emerald-400">₹10,00,000.00</div>
       </div>
+      <div class="border-l border-borderDark pl-4">
+        <span class="text-slate-400">AVAILABLE CASH</span>
+        <div id="statAvailableCash" class="text-sm font-bold text-white">₹10,00,000.00</div>
+      </div>
+    </div>
 
-      <div class="panel">
-        <h2>Order History</h2>
-        <table>
-          <thead>
+    <!-- TOP NAVIGATION TABS -->
+    <nav class="flex items-center gap-1 overflow-x-auto">
+      <button onclick="switchTab('terminal')" id="tabBtn-terminal" class="px-3 py-1.5 rounded-lg text-xs font-semibold bg-accentBlue text-white shadow transition-all"><i class="fa-solid fa-bolt mr-1"></i>Trade</button>
+      <button onclick="switchTab('portfolio')" id="tabBtn-portfolio" class="px-3 py-1.5 rounded-lg text-xs font-semibold text-slate-400 hover:text-white transition-all"><i class="fa-solid fa-briefcase mr-1"></i>Portfolio</button>
+      <button onclick="switchTab('academy')" id="tabBtn-academy" class="px-3 py-1.5 rounded-lg text-xs font-semibold text-slate-400 hover:text-white transition-all"><i class="fa-solid fa-graduation-cap mr-1"></i>Academy</button>
+      <button onclick="switchTab('compete')" id="tabBtn-compete" class="px-3 py-1.5 rounded-lg text-xs font-semibold text-slate-400 hover:text-white transition-all"><i class="fa-solid fa-trophy mr-1"></i>Compete</button>
+      <button onclick="switchTab('profile')" id="tabBtn-profile" class="px-3 py-1.5 rounded-lg text-xs font-semibold text-slate-400 hover:text-white transition-all"><i class="fa-solid fa-user mr-1"></i>Profile</button>
+    </nav>
+  </header>
+
+  <!-- ==================== VIEW 1: TRADING TERMINAL ==================== -->
+  <main id="view-terminal" class="flex-1 grid grid-cols-12 gap-3 p-3">
+    <!-- LEFT: WATCHLIST & SEARCH -->
+    <aside class="col-span-12 md:col-span-4 lg:col-span-3 bg-panelDark border border-borderDark rounded-xl flex flex-col h-[82vh]">
+      <div class="p-3 border-b border-borderDark space-y-2">
+        <div class="flex items-center justify-between">
+          <span class="font-bold text-xs uppercase tracking-wider text-slate-400"><i class="fa-solid fa-list mr-1.5"></i> Watchlist (<span id="stockCount"></span>)</span>
+          <span class="text-[10px] bg-emerald-950 text-emerald-400 px-2 py-0.5 rounded border border-emerald-800/50 flex items-center gap-1.5"><span class="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-ping"></span> LIVE</span>
+        </div>
+        <div class="relative">
+          <i class="fa-solid fa-search absolute left-3 top-2.5 text-slate-500 text-xs"></i>
+          <input type="text" id="searchStock" onkeyup="filterWatchlist()" placeholder="Search NSE stocks..." class="w-full bg-tradeDark border border-borderDark rounded-lg pl-8 pr-3 py-1.5 text-xs text-white focus:outline-none focus:border-accentBlue">
+        </div>
+      </div>
+      <div id="watchlistContainer" class="flex-1 overflow-y-auto divide-y divide-borderDark/40"></div>
+    </aside>
+
+    <!-- CENTER: CHART CONTAINER -->
+    <section class="col-span-12 md:col-span-8 lg:col-span-6 bg-panelDark border border-borderDark rounded-xl flex flex-col h-[82vh] overflow-hidden">
+      <div class="p-3 border-b border-borderDark flex flex-wrap items-center justify-between gap-2">
+        <div class="flex items-center gap-3">
+          <span id="activeChartSymbol" class="text-base font-bold text-white">RELIANCE</span>
+          <span id="activeChartPrice" class="text-sm font-mono font-bold text-emerald-400">₹2,950.40</span>
+          <span id="activeChartChange" class="text-xs font-mono text-emerald-400">+1.24%</span>
+        </div>
+        <div class="flex items-center gap-2">
+          <div class="flex items-center bg-tradeDark p-1 rounded-lg border border-borderDark text-xs font-semibold">
+            <button onclick="zoomChart(1)" class="px-2 py-1 rounded text-slate-400 hover:text-white hover:bg-panelDark transition-all" title="Zoom In"><i class="fa-solid fa-magnifying-glass-plus"></i></button>
+            <button onclick="zoomChart(-1)" class="px-2 py-1 rounded text-slate-400 hover:text-white hover:bg-panelDark transition-all" title="Zoom Out"><i class="fa-solid fa-magnifying-glass-minus"></i></button>
+          </div>
+          <div class="flex items-center bg-tradeDark p-1 rounded-lg border border-borderDark text-xs font-semibold">
+            <button onclick="setChartType('candlestick')" id="btnCandle" class="px-2.5 py-1 rounded bg-panelDark text-white">Candles</button>
+            <button onclick="setChartType('line')" id="btnLine" class="px-2.5 py-1 rounded text-slate-400 hover:text-white">Area</button>
+          </div>
+        </div>
+      </div>
+      <div class="relative flex-1 bg-tradeDark flex items-center justify-center overflow-hidden">
+        <canvas id="marketCanvas" class="w-full h-full cursor-crosshair"></canvas>
+      </div>
+    </section>
+
+    <!-- RIGHT: ORDER EXECUTION -->
+    <aside class="col-span-12 lg:col-span-3 bg-panelDark border border-borderDark rounded-xl flex flex-col h-[82vh] p-4">
+      <div class="border-b border-borderDark pb-3 mb-4 flex items-center justify-between">
+        <span class="text-xs font-bold text-slate-400 uppercase tracking-wider"><i class="fa-solid fa-receipt mr-1.5"></i> Order Terminal</span>
+      </div>
+      <div class="grid grid-cols-2 gap-2 mb-4 bg-tradeDark p-1 rounded-lg border border-borderDark">
+        <button id="orderTypeBuy" onclick="setOrderSide('BUY')" class="py-2 rounded-md font-bold text-xs bg-accentGreen text-white transition-all">BUY</button>
+        <button id="orderTypeSell" onclick="setOrderSide('SELL')" class="py-2 rounded-md font-bold text-xs text-slate-400 hover:text-white transition-all">SELL</button>
+      </div>
+      <div class="space-y-4 flex-1">
+        <div>
+          <label class="text-xs text-slate-400 font-medium block mb-1">Asset</label>
+          <input type="text" id="orderSymbol" readonly class="w-full bg-tradeDark border border-borderDark rounded-lg px-3 py-2 text-sm font-bold text-white focus:outline-none">
+        </div>
+        <div>
+          <div class="flex justify-between items-center mb-1">
+            <label class="text-xs text-slate-400 font-medium">Quantity</label>
+            <span id="orderMaxQty" class="text-[11px] text-slate-400 font-mono">Max: 0</span>
+          </div>
+          <input type="number" id="orderQty" min="1" value="10" oninput="calculateOrderEstimate()" class="w-full bg-tradeDark border border-borderDark rounded-lg px-3 py-2 text-sm font-mono text-white focus:outline-none focus:border-accentBlue">
+        </div>
+        <div class="bg-tradeDark/60 border border-borderDark rounded-lg p-3 space-y-1.5 text-xs font-mono">
+          <div class="flex justify-between text-slate-400"><span>Market Price</span><span id="orderEstPrice" class="text-slate-200">₹0.00</span></div>
+          <div class="border-t border-borderDark pt-1.5 flex justify-between font-bold text-sm">
+            <span class="text-slate-300">Total Value</span><span id="orderEstTotal" class="text-white">₹0.00</span>
+          </div>
+        </div>
+        <button onclick="executeOrder()" id="btnSubmitOrder" class="w-full py-3 rounded-lg font-bold text-sm bg-accentGreen hover:bg-emerald-600 text-white shadow-lg transition-all flex items-center justify-center gap-2">
+          <i class="fa-solid fa-bolt"></i> Execute Order
+        </button>
+        <div id="orderNotification" class="hidden p-2.5 rounded-lg text-xs font-medium text-center transition-all"></div>
+      </div>
+    </aside>
+  </main>
+
+  <!-- ==================== VIEW 2: PORTFOLIO ==================== -->
+  <main id="view-portfolio" class="hidden flex-1 p-6 max-w-7xl mx-auto w-full space-y-6">
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+      <div class="bg-panelDark border border-borderDark rounded-xl p-4">
+        <span class="text-xs text-slate-400 font-medium">Total Portfolio Value</span>
+        <div id="portNetWorth" class="text-2xl font-black font-mono mt-1 text-white">₹10,00,000.00</div>
+      </div>
+      <div class="bg-panelDark border border-borderDark rounded-xl p-4">
+        <span class="text-xs text-slate-400 font-medium">Liquid Cash</span>
+        <div id="portLiquidCash" class="text-2xl font-black font-mono mt-1 text-white">₹10,00,000.00</div>
+      </div>
+      <div class="bg-panelDark border border-borderDark rounded-xl p-4">
+        <span class="text-xs text-slate-400 font-medium">Invested Capital</span>
+        <div id="portInvested" class="text-2xl font-black font-mono mt-1 text-white">₹0.00</div>
+      </div>
+      <div class="bg-panelDark border border-borderDark rounded-xl p-4">
+        <span class="text-xs text-slate-400 font-medium">Asset Allocation (Stocks)</span>
+        <div id="portDiversification" class="text-2xl font-black font-mono mt-1 text-accentBlue">0 Unique</div>
+      </div>
+    </div>
+
+    <div class="bg-panelDark border border-borderDark rounded-xl overflow-hidden shadow">
+      <div class="p-4 border-b border-borderDark flex items-center justify-between">
+        <h3 class="font-bold text-sm text-white"><i class="fa-solid fa-briefcase mr-2 text-accentBlue"></i>Holdings Management</h3>
+      </div>
+      <div class="overflow-x-auto">
+        <table class="w-full text-left text-xs font-mono">
+          <thead class="bg-tradeDark/60 text-slate-400 uppercase text-[10px] border-b border-borderDark">
             <tr>
-              <th>Side</th>
-              <th>Symbol</th>
-              <th>Qty</th>
-              <th>Price</th>
+              <th class="p-3">Symbol</th>
+              <th class="p-3 text-right">Qty</th>
+              <th class="p-3 text-right">Avg Price</th>
+              <th class="p-3 text-right">LTP</th>
+              <th class="p-3 text-right">Current Value</th>
+              <th class="p-3 text-right">Unrealized P&L</th>
+              <th class="p-3 text-center">Action</th>
             </tr>
           </thead>
-          <tbody id="ordersBody"></tbody>
+          <tbody id="holdingsTableBody" class="divide-y divide-borderDark/40"></tbody>
         </table>
       </div>
     </div>
-  </div>
+  </main>
 
+  <!-- ==================== VIEW 3: ACADEMY (LEARNING) ==================== -->
+  <main id="view-academy" class="hidden flex-1 p-6 max-w-7xl mx-auto w-full space-y-6">
+    <div class="bg-panelDark border border-borderDark rounded-xl p-6">
+      <h2 class="text-xl font-bold text-white mb-2"><i class="fa-solid fa-book-open text-accentBlue mr-2"></i>Learning & Education Hub</h2>
+      <p class="text-sm text-slate-400 mb-6">Master stock market fundamentals and risk management strategies. Click a block to open its step-by-step guidance.</p>
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div onclick="openGuide('beginner')" class="bg-tradeDark/60 border border-borderDark p-4 rounded-lg hover:border-accentBlue transition-colors cursor-pointer">
+          <i class="fa-solid fa-seedling text-emerald-400 text-2xl mb-3"></i>
+          <h4 class="text-sm font-bold text-white mb-1">Beginner Guides</h4>
+          <p class="text-xs text-slate-400">Introduction to the NSE, stock types, and how market pricing works.</p>
+          <div id="acProg-beginner" class="text-[10px] font-mono text-emerald-400 mt-3"></div>
+        </div>
+        <div onclick="openGuide('strategy')" class="bg-tradeDark/60 border border-borderDark p-4 rounded-lg hover:border-accentBlue transition-colors cursor-pointer">
+          <i class="fa-solid fa-chess-knight text-indigo-400 text-2xl mb-3"></i>
+          <h4 class="text-sm font-bold text-white mb-1">Investment Strategies</h4>
+          <p class="text-xs text-slate-400">Value investing, swing trading, and portfolio diversification theory.</p>
+          <div id="acProg-strategy" class="text-[10px] font-mono text-emerald-400 mt-3"></div>
+        </div>
+        <div onclick="openGuide('risk')" class="bg-tradeDark/60 border border-borderDark p-4 rounded-lg hover:border-accentBlue transition-colors cursor-pointer">
+          <i class="fa-solid fa-shield-halved text-rose-400 text-2xl mb-3"></i>
+          <h4 class="text-sm font-bold text-white mb-1">Risk Management</h4>
+          <p class="text-xs text-slate-400">Stop-losses, position sizing, and capital preservation rules.</p>
+          <div id="acProg-risk" class="text-[10px] font-mono text-emerald-400 mt-3"></div>
+        </div>
+        <div onclick="openGuide('glossary')" class="bg-tradeDark/60 border border-borderDark p-4 rounded-lg hover:border-accentBlue transition-colors cursor-pointer">
+          <i class="fa-solid fa-spell-check text-yellow-400 text-2xl mb-3"></i>
+          <h4 class="text-sm font-bold text-white mb-1">Financial Glossary</h4>
+          <p class="text-xs text-slate-400">Dictionary of terms like P/E Ratio, Market Cap, EPS, and Dividends.</p>
+          <div id="acProg-glossary" class="text-[10px] font-mono text-slate-500 mt-3"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- OPEN GUIDE PANEL -->
+    <div id="acGuidePanel" class="hidden bg-panelDark border border-borderDark rounded-xl p-6">
+      <div class="flex items-start justify-between gap-3 mb-4">
+        <div>
+          <h3 id="acGuideTitle" class="text-lg font-bold text-white"></h3>
+          <p id="acGuideIntro" class="text-xs text-slate-400 mt-1"></p>
+        </div>
+        <button onclick="closeGuide()" class="text-slate-400 hover:text-white text-xs border border-borderDark rounded px-2 py-1"><i class="fa-solid fa-xmark mr-1"></i>Close</button>
+      </div>
+      <div id="acGuideBody" class="space-y-2"></div>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <!-- SKILL COACH -->
+      <div class="bg-panelDark border border-borderDark rounded-xl p-6">
+        <h3 class="text-sm font-bold text-white mb-1"><i class="fa-solid fa-user-graduate text-accentBlue mr-2"></i>Your Skill Coach</h3>
+        <p class="text-xs text-slate-400 mb-3">Personal instructions based on your own trades and holdings, plus a learning path for your level.</p>
+        <div class="flex gap-1 mb-4 text-xs font-semibold" id="acLevelBtns"></div>
+        <div id="acPath" class="mb-5"></div>
+        <h4 class="text-xs font-bold uppercase tracking-wider text-slate-400 mb-2">Feedback on your trading</h4>
+        <div id="acCoachTips" class="space-y-2"></div>
+      </div>
+
+      <!-- NEWS -->
+      <div class="bg-panelDark border border-borderDark rounded-xl p-6">
+        <div class="flex items-center justify-between mb-1">
+          <h3 class="text-sm font-bold text-white"><i class="fa-regular fa-newspaper text-accentBlue mr-2"></i>Stock News Updates</h3>
+          <button onclick="acLoadNews(acNewsMode, acNewsSym)" class="text-xs text-slate-400 hover:text-white border border-borderDark rounded px-2 py-1" title="Refresh"><i class="fa-solid fa-rotate"></i></button>
+        </div>
+        <p class="text-xs text-slate-400 mb-3">Headlines for the stocks you hold, the wider market, or any stock you choose.</p>
+        <div class="flex flex-wrap items-center gap-1 mb-3 text-xs font-semibold">
+          <button id="acNewsBtn-mine" onclick="acLoadNews('mine')" class="px-3 py-1.5 rounded-lg">My Stocks</button>
+          <button id="acNewsBtn-market" onclick="acLoadNews('market')" class="px-3 py-1.5 rounded-lg">Market</button>
+          <select id="acNewsSelect" onchange="acLoadNews('sym', this.value)" class="bg-tradeDark border border-borderDark rounded-lg px-2 py-1.5 text-slate-300 text-xs"></select>
+        </div>
+        <div id="acNewsList" class="space-y-2 max-h-80 overflow-y-auto pr-1"></div>
+        <div class="mt-4 p-3 rounded-lg bg-tradeDark/60 border border-borderDark">
+          <div class="text-xs font-bold text-white mb-1"><i class="fa-solid fa-lightbulb text-yellow-400 mr-1"></i>How to use news (instructions)</div>
+          <ul class="text-[11px] text-slate-400 space-y-1 list-disc ml-4">
+            <li>Ask first: is it about the company (results, orders, management) or the whole sector/market?</li>
+            <li>Check the chart: has the price already moved? News is often priced in within minutes.</li>
+            <li>Never trade on one headline. Look for a second source and for the actual numbers.</li>
+            <li>Before acting, write your reason in the Trading Journal (Profile tab) and set your stop-loss first.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- ==================== VIEW 4: COMPETE ==================== -->
+  <main id="view-compete" class="hidden flex-1 p-6 max-w-7xl mx-auto w-full space-y-6">
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div class="md:col-span-2 space-y-6">
+        <div class="bg-panelDark border border-borderDark rounded-xl p-6">
+          <h3 class="font-bold text-sm text-white mb-4"><i class="fa-solid fa-fire text-orange-500 mr-2"></i>Active Mock Competitions</h3>
+          <div class="space-y-3">
+            <div class="bg-tradeDark/60 border border-borderDark p-4 rounded-lg flex justify-between items-center">
+              <div>
+                <h4 class="font-bold text-white text-sm">Weekly Nifty Challenge</h4>
+                <p class="text-xs text-slate-400 mt-1">Generate the highest return using large-cap stocks. Ends in 2 days.</p>
+              </div>
+              <button class="px-4 py-2 bg-accentBlue text-white text-xs font-bold rounded hover:bg-blue-600">Joined</button>
+            </div>
+            <div class="bg-tradeDark/60 border border-borderDark p-4 rounded-lg flex justify-between items-center opacity-75">
+              <div>
+                <h4 class="font-bold text-white text-sm">Tech Sector Sprint</h4>
+                <p class="text-xs text-slate-400 mt-1">IT and Software stocks only. Starts next week.</p>
+              </div>
+              <button class="px-4 py-2 bg-slate-700 text-white text-xs font-bold rounded">Upcoming</button>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Leaderboard -->
+      <div class="bg-panelDark border border-borderDark rounded-xl overflow-hidden shadow">
+        <div class="p-4 border-b border-borderDark bg-gradient-to-r from-panelDark to-indigo-950/30">
+          <h3 class="font-bold text-sm text-white"><i class="fa-solid fa-trophy text-yellow-400 mr-2"></i>Global Leaderboard</h3>
+        </div>
+        <table class="w-full text-left text-xs font-mono">
+          <thead class="bg-tradeDark/60 text-slate-400 uppercase text-[10px] border-b border-borderDark">
+            <tr><th class="p-3">Rank</th><th class="p-3">Trader</th><th class="p-3 text-right">Return</th></tr>
+          </thead>
+          <tbody class="divide-y divide-borderDark/40">
+            <tr>
+              <td class="p-3 text-yellow-400 font-bold">#1</td>
+              <td class="p-3 text-white">Current User</td>
+              <td class="p-3 text-right font-bold text-emerald-400" id="leadReturn">0.00%</td>
+            </tr>
+            <tr><td class="p-3 text-slate-300">#2</td><td class="p-3 text-slate-400">StockMaster99</td><td class="p-3 text-right text-emerald-400">+12.4%</td></tr>
+            <tr><td class="p-3 text-orange-400">#3</td><td class="p-3 text-slate-400">BullRider</td><td class="p-3 text-right text-emerald-400">+8.1%</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </main>
+
+  <!-- ==================== VIEW 5: USER PROFILE & JOURNAL ==================== -->
+  <main id="view-profile" class="hidden flex-1 p-6 max-w-7xl mx-auto w-full space-y-6">
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+      
+      <!-- Profile & Badges -->
+      <div class="space-y-6">
+        <div class="bg-panelDark border border-borderDark rounded-xl p-6 text-center">
+          <div class="h-20 w-20 bg-accentBlue rounded-full mx-auto flex items-center justify-center text-3xl font-bold text-white mb-4" id="profAvatar">U</div>
+          <h2 id="profName" class="text-lg font-bold text-white">Virtual Trader</h2>
+          <button onclick="editProfileName()" class="mt-3 text-[11px] text-slate-300 hover:text-white border border-borderDark rounded px-2 py-1"><i class="fa-solid fa-pen mr-1"></i>Edit name</button>
+        </div>
+        
+        <div class="bg-panelDark border border-borderDark rounded-xl p-6">
+          <h3 class="font-bold text-sm text-white mb-4"><i class="fa-solid fa-medal text-yellow-400 mr-2"></i>Achievement Badges</h3>
+          <div class="grid grid-cols-3 gap-2 text-center">
+            <div class="p-2 bg-tradeDark rounded border border-emerald-900/50" title="First Trade Executed">
+              <i class="fa-solid fa-handshake text-emerald-400 text-xl mb-1"></i><p class="text-[10px] text-slate-400">First Trade</p>
+            </div>
+            <div class="p-2 bg-tradeDark rounded border border-indigo-900/50" title="Diversified Portfolio">
+              <i class="fa-solid fa-chart-pie text-indigo-400 text-xl mb-1"></i><p class="text-[10px] text-slate-400">Diversifier</p>
+            </div>
+            <div class="p-2 bg-tradeDark rounded border border-borderDark opacity-50" title="Achieve 10% Profit (Locked)">
+              <i class="fa-solid fa-lock text-slate-500 text-xl mb-1"></i><p class="text-[10px] text-slate-500">Bull Run</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Trading Journal & History -->
+      <div class="md:col-span-2 space-y-6">
+        <div class="bg-panelDark border border-borderDark rounded-xl p-6">
+          <h3 class="font-bold text-sm text-white mb-2"><i class="fa-solid fa-book-journal-whills text-accentBlue mr-2"></i>Trading Journal</h3>
+          <p class="text-xs text-slate-400 mb-4">Document your market thesis and emotional state for self-reflection.</p>
+          <textarea class="w-full bg-tradeDark border border-borderDark rounded-lg p-3 text-sm text-white focus:outline-none focus:border-accentBlue h-32" placeholder="E.g., Bought RELIANCE today because of strong quarterly guidance. Kept position size small due to market volatility..."></textarea>
+          <div class="mt-2 text-right">
+            <button class="px-4 py-2 bg-slate-700 hover:bg-slate-600 text-white text-xs font-bold rounded transition-colors">Save Entry</button>
+          </div>
+        </div>
+
+        <div class="bg-panelDark border border-borderDark rounded-xl overflow-hidden shadow">
+          <div class="p-4 border-b border-borderDark"><h3 class="font-bold text-sm text-white"><i class="fa-solid fa-clock-rotate-left mr-2 text-indigo-400"></i>Transaction History</h3></div>
+          <div class="overflow-x-auto max-h-64 overflow-y-auto">
+            <table class="w-full text-left text-xs font-mono">
+              <thead class="bg-tradeDark/60 text-slate-400 uppercase text-[10px] sticky top-0 border-b border-borderDark">
+                <tr><th class="p-3">Time</th><th class="p-3">Type</th><th class="p-3">Symbol</th><th class="p-3 text-right">Qty</th><th class="p-3 text-right">Total</th></tr>
+              </thead>
+              <tbody id="transactionTableBody" class="divide-y divide-borderDark/40"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- ==================== SCRIPT & CLIENT CONTROLLER ==================== -->
   <script>
-    const START_CASH = 1000000;
-    const STORAGE_KEY = "apextrader_nologin_v1";
+    tailwind.config = {
+      theme: { extend: { colors: { tradeDark: '#0b0e14', panelDark: '#121824', borderDark: '#1e293b', accentBlue: '#2563eb', accentGreen: '#10b981' } } }
+    };
 
-    // Optional: set a backend URL if you host /api/quote/:symbol, otherwise uses live market simulation
-    const QUOTE_API_BASE = "";
-    const USE_BACKEND_QUOTES = false;
+    const ACCOUNT_STORE = 'apex_account_v1';
+    const NAME_STORE = 'apex_name_v1';
+    let currentSide = 'BUY';
+    let chartType = 'candlestick';
+    let activeSymbol = 'RELIANCE';
+    const MAX_CANDLES = 40;
+    let visibleCandles = 40; 
+    let userAccount = { cash: 1000000, holdings: {}, history: [] };
 
-    const DEFAULT_STOCKS = [
-      { symbol: "AAPL", name: "Apple Inc.", price: 225.00, prev: 225.00 },
-      { symbol: "MSFT", name: "Microsoft Corp.", price: 420.00, prev: 420.00 },
-      { symbol: "GOOGL", name: "Alphabet Inc.", price: 175.00, prev: 175.00 },
-      { symbol: "AMZN", name: "Amazon.com Inc.", price: 190.00, prev: 190.00 },
-      { symbol: "TSLA", name: "Tesla Inc.", price: 250.00, prev: 250.00 }
-    ];
+    // Top 56 Stocks List
+    let marketData = {
+      'RELIANCE': { price: 2950.40, change: 1.24, history: [] }, 'TCS': { price: 3820.10, change: -0.45, history: [] },
+      'HDFCBANK': { price: 1445.00, change: -0.15, history: [] }, 'ICICIBANK': { price: 1085.30, change: 1.60, history: [] },
+      'INFY': { price: 1610.75, change: 0.82, history: [] }, 'ITC': { price: 420.50, change: -0.20, history: [] },
+      'SBIN': { price: 750.20, change: 0.50, history: [] }, 'BHARTIARTL': { price: 1150.00, change: 1.10, history: [] },
+      'HINDUNILVR': { price: 2400.10, change: -0.40, history: [] }, 'LT': { price: 3600.80, change: 0.90, history: [] },
+      'BAJFINANCE': { price: 7100.00, change: -1.20, history: [] }, 'MARUTI': { price: 12500.00, change: 0.30, history: [] },
+      'AXISBANK': { price: 1050.50, change: 0.70, history: [] }, 'TATAMOTORS': { price: 980.20, change: 2.10, history: [] },
+      'KOTAKBANK': { price: 1750.00, change: 0.10, history: [] }, 'SUNPHARMA': { price: 1540.30, change: 0.80, history: [] },
+      'ONGC': { price: 270.40, change: -0.50, history: [] }, 'NTPC': { price: 340.50, change: 1.40, history: [] },
+      'POWERGRID': { price: 280.10, change: 0.60, history: [] }, 'M&M': { price: 1950.20, change: 1.50, history: [] },
+      'ULTRACEMCO': { price: 9800.00, change: -0.80, history: [] }, 'TITAN': { price: 3650.40, change: 0.40, history: [] },
+      'BAJAJFINSV': { price: 1650.20, change: -0.30, history: [] }, 'ASIANPAINT': { price: 2850.50, change: -0.90, history: [] },
+      'COALINDIA': { price: 450.30, change: 1.20, history: [] }, 'TATASTEEL': { price: 155.40, change: 2.50, history: [] },
+      'WIPRO': { price: 520.10, change: 0.20, history: [] }, 'HCLTECH': { price: 1620.50, change: 0.70, history: [] },
+      'ADANIENT': { price: 3100.20, change: 3.40, history: [] }, 'ADANIPORTS': { price: 1300.50, change: 2.10, history: [] },
+      'GRASIM': { price: 2200.10, change: 0.50, history: [] }, 'TECHM': { price: 1250.30, change: -0.60, history: [] },
+      'HINDALCO': { price: 590.20, change: 1.80, history: [] }, 'JSWSTEEL': { price: 850.40, change: 1.10, history: [] },
+      'EICHERMOT': { price: 3800.60, change: -0.40, history: [] }, 'DIVISLAB': { price: 3500.20, change: -1.50, history: [] },
+      'DRREDDY': { price: 6200.50, change: 0.90, history: [] }, 'CIPLA': { price: 1450.10, change: 0.20, history: [] },
+      'APOLLOHOSP': { price: 6100.30, change: 1.20, history: [] }, 'TATACONSUM': { price: 1150.20, change: -0.50, history: [] },
+      'BRITANNIA': { price: 4900.50, change: -0.70, history: [] }, 'NESTLEIND': { price: 2550.10, change: 0.30, history: [] },
+      'HEROMOTOCO': { price: 4600.20, change: 0.80, history: [] }, 'INDUSINDBK': { price: 1520.40, change: -1.20, history: [] },
+      'BAJAJ-AUTO': { price: 8500.50, change: 1.40, history: [] }, 'BPCL': { price: 620.30, change: -0.20, history: [] },
+      'UPL': { price: 480.10, change: -2.10, history: [] }, 'HDFCLIFE': { price: 620.50, change: 0.60, history: [] },
+      'SBILIFE': { price: 1450.20, change: 0.40, history: [] }, 'LTIM': { price: 5400.30, change: -0.90, history: [] },
+      'ZOMATO': { price: 160.50, change: 4.20, history: [] }, 'JIOFIN': { price: 350.20, change: 1.50, history: [] },
+      'HAL': { price: 3200.10, change: 2.80, history: [] }, 'BEL': { price: 190.50, change: 3.10, history: [] },
+      'IRFC': { price: 145.20, change: -1.20, history: [] }, 'RVNL': { price: 260.40, change: 1.80, history: [] }
+    };
 
-    let state = loadState();
-
-    function loadState() {
-      try {
-        const raw = localStorage.getItem(STORAGE_KEY);
-        if (raw) return JSON.parse(raw);
-      } catch {}
-      return {
-        cash: START_CASH,
-        stocks: structuredClone(DEFAULT_STOCKS),
-        holdings: {},
-        orders: []
-      };
-    }
-
-    function saveState() {
-      try {
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
-      } catch {}
-    }
-
-    function formatINR(num) {
-      return "₹" + Number(num || 0).toLocaleString("en-IN", {
-        minimumFractionDigits: 2,
-        maximumFractionDigits: 2
+    Object.keys(marketData).forEach(sym => {
+      let base = marketData[sym].price;
+      marketData[sym].history = Array.from({ length: MAX_CANDLES }, (_, i) => {
+        let open = base + (Math.random() * 20 - 10);
+        let close = open + (Math.random() * 16 - 8);
+        return { open, close, high: Math.max(open, close) + Math.random() * 6, low: Math.min(open, close) - Math.random() * 6 };
       });
+    });
+
+    function switchTab(tabId) {
+      ['terminal', 'portfolio', 'academy', 'compete', 'profile'].forEach(t => {
+        const view = document.getElementById(`view-${t}`);
+        const btn = document.getElementById(`tabBtn-${t}`);
+        if (view) view.classList.add('hidden');
+        if (btn) {
+          btn.classList.remove('bg-accentBlue', 'text-white', 'border-accentBlue');
+          btn.classList.add('text-slate-400');
+        }
+      });
+      document.getElementById(`view-${tabId}`).classList.remove('hidden');
+      const targetBtn = document.getElementById(`tabBtn-${tabId}`);
+      targetBtn.classList.add('bg-accentBlue', 'text-white');
+      targetBtn.classList.remove('text-slate-400');
+      if (tabId === 'portfolio' || tabId === 'profile') renderPortfolioView();
+      if (tabId === 'terminal') drawChart();
+    }
+
+    // Account is saved in this browser (localStorage)
+    function saveAccount() {
+      try { localStorage.setItem(ACCOUNT_STORE, JSON.stringify(userAccount)); } catch (e) {}
+    }
+    function loadAccount() {
+      try {
+        const d = JSON.parse(localStorage.getItem(ACCOUNT_STORE));
+        if (d && typeof d.cash === 'number') userAccount = { cash: d.cash, holdings: d.holdings || {}, history: d.history || [] };
+      } catch (e) {}
+    }
+    function applyName(n) {
+      document.getElementById('profName').textContent = n;
+      document.getElementById('profAvatar').textContent = n.charAt(0).toUpperCase();
+    }
+    function editProfileName() {
+      const n = prompt('Your display name:', document.getElementById('profName').textContent);
+      if (n === null || !n.trim()) return;
+      applyName(n.trim());
+      try { localStorage.setItem(NAME_STORE, n.trim()); } catch (e) {}
+    }
+
+    function filterWatchlist() {
+      const q = document.getElementById('searchStock').value.toUpperCase();
+      const items = document.getElementById('watchlistContainer').children;
+      for (let i = 0; i < items.length; i++) {
+        const sym = items[i].getAttribute('data-sym');
+        items[i].style.display = sym.includes(q) ? '' : 'none';
+      }
+    }
+
+    function renderWatchlist() {
+      const container = document.getElementById('watchlistContainer');
+      container.innerHTML = '';
+      document.getElementById('stockCount').textContent = Object.keys(marketData).length;
+      Object.entries(marketData).forEach(([sym, data]) => {
+        const isUp = data.change >= 0;
+        const div = document.createElement('div');
+        div.className = `p-3 flex items-center justify-between cursor-pointer hover:bg-tradeDark/60 transition-all ${sym === activeSymbol ? 'bg-tradeDark/80 border-l-2 border-accentBlue' : ''}`;
+        div.setAttribute('data-sym', sym);
+        div.onclick = () => selectSymbol(sym);
+        div.innerHTML = `
+          <div><div class="font-bold text-xs text-white">${sym}</div><div class="text-[10px] text-slate-400 font-mono">NSE • EQ</div></div>
+          <div class="text-right font-mono"><div class="text-xs font-bold ${isUp ? 'text-emerald-400' : 'text-rose-400'}">₹${data.price.toFixed(2)}</div>
+          <div class="text-[10px] ${isUp ? 'text-emerald-400' : 'text-rose-400'}">${isUp ? '+' : ''}${data.change.toFixed(2)}%</div></div>
+        `;
+        container.appendChild(div);
+      });
+      filterWatchlist(); 
     }
 
     function selectSymbol(sym) {
-      document.getElementById("symSelect").value = sym;
-      updateEstimate();
+      activeSymbol = sym;
+      document.getElementById('activeChartSymbol').textContent = sym;
+      document.getElementById('orderSymbol').value = sym;
+      calculateOrderEstimate();
+      renderWatchlist();
+      drawChart();
     }
 
-    function updateEstimate() {
-      const sym = document.getElementById("symSelect").value;
-      const qty = Math.max(0, parseInt(document.getElementById("qtyInput").value || "0", 10));
-      const stock = state.stocks.find((s) => s.symbol === sym);
-      const total = stock ? stock.price * qty : 0;
-      document.getElementById("estTotal").textContent = formatINR(total);
-    }
+    setInterval(() => {
+      Object.keys(marketData).forEach(sym => {
+        const item = marketData[sym];
+        const pctDelta = (Math.random() - 0.495) * 0.003;
+        const newPrice = Math.max(10, item.price * (1 + pctDelta));
+        item.change += pctDelta * 100;
+        item.price = newPrice;
+        const last = item.history[item.history.length - 1];
+        last.close = newPrice;
+        last.high = Math.max(last.high, newPrice);
+        last.low = Math.min(last.low, newPrice);
+      });
 
-    function executeOrder(side) {
-      const statusEl = document.getElementById("orderStatus");
-      const sym = document.getElementById("symSelect").value;
-      const qty = parseInt(document.getElementById("qtyInput").value, 10);
-      const stock = state.stocks.find((s) => s.symbol === sym);
+      const current = marketData[activeSymbol];
+      document.getElementById('activeChartPrice').textContent = `₹${current.price.toFixed(2)}`;
+      const chgEl = document.getElementById('activeChartChange');
+      chgEl.textContent = `${current.change >= 0 ? '+' : ''}${current.change.toFixed(2)}%`;
+      chgEl.className = `text-xs font-mono ${current.change >= 0 ? 'text-emerald-400' : 'text-rose-400'}`;
 
-      if (!stock || !qty || qty <= 0) {
-        statusEl.style.color = "#f87171";
-        statusEl.textContent = "Please enter a valid quantity (1 or more).";
-        return;
+      calculateOrderEstimate();
+      const watchListItems = document.getElementById('watchlistContainer').children;
+      let i = 0;
+      for (const [sym, data] of Object.entries(marketData)) {
+        if (watchListItems[i]) {
+          const isUp = data.change >= 0;
+          const priceDiv = watchListItems[i].children[1].children[0];
+          const changeDiv = watchListItems[i].children[1].children[1];
+          priceDiv.textContent = `₹${data.price.toFixed(2)}`;
+          priceDiv.className = `text-xs font-bold ${isUp ? 'text-emerald-400' : 'text-rose-400'}`;
+          changeDiv.textContent = `${isUp ? '+' : ''}${data.change.toFixed(2)}%`;
+          changeDiv.className = `text-[10px] ${isUp ? 'text-emerald-400' : 'text-rose-400'}`;
+        }
+        i++;
+      }
+      if (document.getElementById('view-terminal').classList.contains('hidden') === false) drawChart();
+      refreshUI();
+    }, 1500);
+
+    function setChartType(type) { chartType = type; drawChart(); }
+    function zoomChart(dir) { visibleCandles = dir === 1 ? Math.max(10, visibleCandles - 5) : Math.min(MAX_CANDLES, visibleCandles + 5); drawChart(); }
+
+    function drawChart() {
+      const canvas = document.getElementById('marketCanvas');
+      if (!canvas) return;
+      const ctx = canvas.getContext('2d');
+      const rect = canvas.getBoundingClientRect();
+      canvas.width = rect.width; canvas.height = rect.height;
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      const fullHistory = marketData[activeSymbol].history;
+      if (!fullHistory || fullHistory.length === 0) return;
+      
+      const history = fullHistory.slice(-visibleCandles);
+      let minP = Math.min(...history.map(d => d.low));
+      let maxP = Math.max(...history.map(d => d.high));
+      const range = (maxP - minP) || 1;
+      
+      const pricePad = range * 0.05;
+      minP -= pricePad;
+      maxP += pricePad;
+      const adjRange = (maxP - minP) || 1;
+
+      const yAxisWidth = 60;
+      const chartW = canvas.width - yAxisWidth;
+      const pad = 20; 
+      const chartH = canvas.height - pad * 2; 
+      const step = chartW / history.length;
+
+      ctx.fillStyle = '#94a3b8';
+      ctx.font = '10px monospace';
+      ctx.textAlign = 'left';
+      ctx.textBaseline = 'middle';
+      ctx.lineWidth = 1;
+
+      const numTicks = 5;
+      for (let i = 0; i <= numTicks; i++) {
+        const priceTick = maxP - (adjRange * (i / numTicks));
+        const y = pad + (i / numTicks) * chartH;
+
+        ctx.beginPath();
+        ctx.moveTo(0, y);
+        ctx.lineTo(chartW, y);
+        ctx.strokeStyle = 'rgba(30, 41, 59, 0.6)';
+        ctx.stroke();
+
+        ctx.fillText(priceTick.toFixed(2), chartW + 5, y);
       }
 
-      const amount = +(stock.price * qty).toFixed(2);
+      ctx.beginPath();
+      ctx.moveTo(chartW, 0);
+      ctx.lineTo(chartW, canvas.height);
+      ctx.strokeStyle = '#1e293b'; 
+      ctx.stroke();
 
-      if (side === "BUY") {
-        if (state.cash < amount) {
-          statusEl.style.color = "#f87171";
-          statusEl.textContent = "Insufficient available cash.";
-          return;
-        }
-        state.cash = +(state.cash - amount).toFixed(2);
-        const cur = state.holdings[sym] || { qty: 0, avgPrice: 0 };
-        const nextQty = cur.qty + qty;
-        const nextAvg = +(((cur.qty * cur.avgPrice) + amount) / nextQty).toFixed(2);
-        state.holdings[sym] = { qty: nextQty, avgPrice: nextAvg };
-        state.orders.unshift({ side: "BUY", symbol: sym, qty, price: stock.price });
-        statusEl.style.color = "#4ade80";
-        statusEl.textContent = `Bought ${qty} ${sym} @ ${formatINR(stock.price)}`;
+      if (chartType === 'candlestick') {
+        history.forEach((d, i) => {
+          const x = i * step + step / 2;
+          const yOpen = canvas.height - pad - ((d.open - minP) / adjRange) * chartH;
+          const yClose = canvas.height - pad - ((d.close - minP) / adjRange) * chartH;
+          const yHigh = canvas.height - pad - ((d.high - minP) / adjRange) * chartH;
+          const yLow = canvas.height - pad - ((d.low - minP) / adjRange) * chartH;
+          
+          const isUp = d.close >= d.open;
+          ctx.strokeStyle = isUp ? '#10b981' : '#ef4444';
+          ctx.fillStyle = isUp ? '#10b981' : '#ef4444';
+          
+          ctx.beginPath(); 
+          ctx.moveTo(x, yHigh); 
+          ctx.lineTo(x, yLow); 
+          ctx.stroke();
+          
+          const bodyY = Math.min(yOpen, yClose);
+          const bodyH = Math.max(Math.abs(yClose - yOpen), 2);
+          ctx.fillRect(x - step * 0.3, bodyY, step * 0.6, bodyH);
+        });
       } else {
-        const cur = state.holdings[sym];
-        if (!cur || cur.qty < qty) {
-          statusEl.style.color = "#f87171";
-          statusEl.textContent = `You only hold ${cur ? cur.qty : 0} shares of ${sym}.`;
-          return;
+        ctx.beginPath(); 
+        ctx.strokeStyle = '#3b82f6'; 
+        ctx.lineWidth = 2;
+        history.forEach((d, i) => {
+          const x = i * step + step / 2;
+          const y = canvas.height - pad - ((d.close - minP) / adjRange) * chartH;
+          if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+        });
+        ctx.stroke();
+      }
+    }
+
+    function setOrderSide(side) {
+      currentSide = side;
+      const bBtn = document.getElementById('orderTypeBuy'), sBtn = document.getElementById('orderTypeSell'), sub = document.getElementById('btnSubmitOrder');
+      if (side === 'BUY') {
+        bBtn.className = 'py-2 rounded-md font-bold text-xs bg-accentGreen text-white'; sBtn.className = 'py-2 rounded-md font-bold text-xs text-slate-400';
+        sub.className = 'w-full py-3 rounded-lg font-bold text-sm bg-accentGreen hover:bg-emerald-600 text-white flex items-center justify-center gap-2';
+        sub.innerHTML = '<i class="fa-solid fa-bolt"></i> Execute BUY Order';
+      } else {
+        sBtn.className = 'py-2 rounded-md font-bold text-xs bg-rose-600 text-white'; bBtn.className = 'py-2 rounded-md font-bold text-xs text-slate-400';
+        sub.className = 'w-full py-3 rounded-lg font-bold text-sm bg-rose-600 hover:bg-rose-700 text-white flex items-center justify-center gap-2';
+        sub.innerHTML = '<i class="fa-solid fa-bolt"></i> Execute SELL Order';
+      }
+      calculateOrderEstimate();
+    }
+
+    function calculateOrderEstimate() {
+      const price = marketData[activeSymbol]?.price || 0, qty = parseInt(document.getElementById('orderQty').value) || 0;
+      document.getElementById('orderEstPrice').textContent = `₹${price.toFixed(2)}`;
+      document.getElementById('orderEstTotal').textContent = `₹${(price * qty).toFixed(2)}`;
+      document.getElementById('orderMaxQty').textContent = currentSide === 'BUY' ? `Max: ${Math.floor(userAccount.cash / (price || 1))}` : `Owned: ${userAccount.holdings[activeSymbol]?.quantity || 0}`;
+    }
+
+    function executeOrder() {
+      const qty = parseInt(document.getElementById('orderQty').value), price = marketData[activeSymbol].price, totalCost = price * qty;
+      if (isNaN(qty) || qty <= 0) return showNotice('Invalid quantity.', false);
+      if (currentSide === 'BUY' && userAccount.cash < totalCost) return showNotice('Insufficient cash.', false);
+      if (currentSide === 'SELL' && (userAccount.holdings[activeSymbol]?.quantity || 0) < qty) return showNotice('Shortfall: Not enough shares.', false);
+
+      const tradeRecord = { time: new Date().toISOString(), type: currentSide, symbol: activeSymbol, quantity: qty, price, total: totalCost };
+      if (currentSide === 'BUY') {
+        userAccount.cash -= totalCost;
+        if (!userAccount.holdings[activeSymbol]) userAccount.holdings[activeSymbol] = { quantity: qty, avgPrice: price };
+        else {
+          const h = userAccount.holdings[activeSymbol];
+          h.avgPrice = ((h.quantity * h.avgPrice) + totalCost) / (h.quantity += qty);
         }
-        state.cash = +(state.cash + amount).toFixed(2);
-        const rem = cur.qty - qty;
-        if (rem === 0) {
-          delete state.holdings[sym];
+      } else {
+        userAccount.cash += totalCost;
+        userAccount.holdings[activeSymbol].quantity -= qty;
+        if (userAccount.holdings[activeSymbol].quantity === 0) delete userAccount.holdings[activeSymbol];
+      }
+      userAccount.history.unshift(tradeRecord);
+      saveAccount();
+      showNotice(`Filled: ${currentSide} ${qty} ${activeSymbol} @ ₹${price.toFixed(2)}`, true);
+      refreshUI(); calculateOrderEstimate();
+    }
+
+    function showNotice(msg, isSuccess) {
+      const el = document.getElementById('orderNotification');
+      el.textContent = msg;
+      el.className = `p-2.5 rounded-lg text-xs font-medium text-center ${isSuccess ? 'bg-emerald-950/80 text-emerald-400' : 'bg-rose-950/80 text-rose-400'}`;
+      el.classList.remove('hidden'); setTimeout(() => el.classList.add('hidden'), 4000);
+    }
+
+    function refreshUI() {
+      let investedVal = 0, currentHoldingsVal = 0;
+      Object.entries(userAccount.holdings).forEach(([sym, h]) => {
+        investedVal += h.quantity * h.avgPrice;
+        currentHoldingsVal += h.quantity * (marketData[sym]?.price || h.avgPrice);
+      });
+      const netWorth = userAccount.cash + currentHoldingsVal;
+      
+      document.getElementById('statNetWorth').textContent = `₹${netWorth.toLocaleString('en-IN', { minimumFractionDigits: 2 })}`;
+      document.getElementById('statAvailableCash').textContent = `₹${userAccount.cash.toLocaleString('en-IN', { minimumFractionDigits: 2 })}`;
+      document.getElementById('portNetWorth').textContent = `₹${netWorth.toLocaleString('en-IN', { minimumFractionDigits: 2 })}`;
+      document.getElementById('portLiquidCash').textContent = `₹${userAccount.cash.toLocaleString('en-IN', { minimumFractionDigits: 2 })}`;
+      document.getElementById('portInvested').textContent = `₹${investedVal.toLocaleString('en-IN', { minimumFractionDigits: 2 })}`;
+      
+      const uniqueStocks = Object.keys(userAccount.holdings).length;
+      document.getElementById('portDiversification').textContent = `${uniqueStocks} Unique`;
+
+      const totalReturn = ((netWorth - 1000000) / 1000000) * 100;
+      document.getElementById('leadReturn').textContent = `${totalReturn >= 0 ? '+' : ''}${totalReturn.toFixed(2)}%`;
+      document.getElementById('leadReturn').className = `p-3 text-right font-bold ${totalReturn >= 0 ? 'text-emerald-400' : 'text-rose-400'}`;
+    }
+
+    function renderPortfolioView() {
+      const tbody = document.getElementById('holdingsTableBody'); tbody.innerHTML = '';
+      Object.entries(userAccount.holdings).forEach(([sym, h]) => {
+        const livePrice = marketData[sym]?.price || h.avgPrice, currentVal = h.quantity * livePrice;
+        const pnl = currentVal - (h.quantity * h.avgPrice), pnlPct = ((livePrice - h.avgPrice) / h.avgPrice) * 100;
+        tbody.innerHTML += `<tr class="hover:bg-tradeDark/30"><td class="p-3 font-bold text-white">${sym}</td><td class="p-3 text-right">${h.quantity}</td><td class="p-3 text-right">₹${h.avgPrice.toFixed(2)}</td><td class="p-3 text-right">₹${livePrice.toFixed(2)}</td><td class="p-3 text-right">₹${currentVal.toFixed(2)}</td><td class="p-3 text-right ${pnl >= 0 ? 'text-emerald-400' : 'text-rose-400'} font-bold">₹${pnl.toFixed(2)} (${pnl >= 0 ? '+' : ''}${pnlPct.toFixed(2)}%)</td><td class="p-3 text-center"><button onclick="selectSymbol('${sym}'); setOrderSide('SELL'); switchTab('terminal');" class="px-2 py-1 text-[10px] rounded bg-rose-950 text-rose-300 border border-rose-800/40">SELL</button></td></tr>`;
+      });
+      const tBodyHistory = document.getElementById('transactionTableBody'); tBodyHistory.innerHTML = '';
+      userAccount.history.forEach(tx => {
+        const displayTime = tx.time.includes('T') ? new Date(tx.time).toLocaleTimeString() : tx.time;
+        tBodyHistory.innerHTML += `<tr><td class="p-3 text-slate-400">${displayTime}</td><td class="p-3 font-bold ${tx.type === 'BUY' ? 'text-emerald-400' : 'text-rose-400'}">${tx.type}</td><td class="p-3 font-bold text-white">${tx.symbol}</td><td class="p-3 text-right">${tx.quantity}</td><td class="p-3 text-right">₹${tx.total.toFixed(2)}</td></tr>`;
+      });
+    }
+
+    window.addEventListener('DOMContentLoaded', () => {
+      renderWatchlist();
+      selectSymbol('RELIANCE');
+      loadAccount();
+      try { const n = localStorage.getItem(NAME_STORE); if (n) applyName(n); } catch (e) {}
+      calculateOrderEstimate();
+      refreshUI();
+      renderPortfolioView();
+      document.getElementById('marketCanvas').addEventListener('wheel', (e) => {
+        e.preventDefault();
+        zoomChart(e.deltaY < 0 ? 1 : -1);
+      });
+    });
+    window.addEventListener('resize', drawChart);
+  </script>
+
+  <script>
+    /* ===================== ACADEMY: GUIDES, SKILL COACH, NEWS ===================== */
+    (function () {
+      const LS_KEY = 'apex_academy_v1';
+      let store = { done: {}, level: 'beginner' };
+      try { store = Object.assign(store, JSON.parse(localStorage.getItem(LS_KEY) || '{}')); } catch (e) {}
+      const save = () => { try { localStorage.setItem(LS_KEY, JSON.stringify(store)); } catch (e) {} };
+      const esc = s => String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+      const inr = n => '₹' + Number(n).toLocaleString('en-IN', { maximumFractionDigits: 2 });
+
+      const GUIDES = {
+        beginner: {
+          title: 'Beginner Guides', intro: 'Start here. Finish the lessons in order and do each "Try it" step in the simulator.',
+          lessons: [
+            { t: '1. What is the NSE and how does trading work?',
+              why: 'The National Stock Exchange (NSE) in Mumbai is where shares of listed Indian companies are bought and sold. Its main index, the Nifty 50, tracks 50 large companies and shows the overall mood of the market.',
+              steps: ['Regular trading runs Monday to Friday, about 9:15 AM to 3:30 PM IST (with a short pre-open session before it).',
+                      'Buying a share means owning a tiny part of that company. Its price rises when more people want to buy than sell.',
+                      'This simulator uses virtual money (₹10,00,000), so you can learn without risking real cash.'],
+              tryIt: { text: 'Open RELIANCE on the Terminal and note its price and % change.', sym: 'RELIANCE', tab: 'terminal' } },
+            { t: '2. Types of stocks',
+              why: 'Stocks behave differently depending on the size and type of the company.',
+              steps: ['Large-cap: the biggest ~100 companies by market value. Usually steadier (e.g. RELIANCE, TCS, HDFCBANK).',
+                      'Mid-cap and small-cap: smaller companies. Higher growth potential, but prices swing much more.',
+                      'Blue-chip: large, established, financially strong companies. Growth stocks reinvest profit; dividend stocks pay part of it out.',
+                      'Sectors (banks, IT, FMCG, auto, energy) often move together because of shared news.'],
+              tryIt: { text: 'Compare TCS and INFY (both IT). Do they move in the same direction today?', sym: 'TCS', tab: 'terminal' } },
+            { t: '3. How market pricing works',
+              why: 'A price is simply the last level where a buyer and a seller agreed.',
+              steps: ['Bid = highest price buyers will pay. Ask = lowest price sellers will accept. The gap is the spread.',
+                      'Volume is how many shares traded. Big moves on high volume are more meaningful than on low volume.',
+                      'Exchanges set daily price bands (circuit limits, such as 5%, 10% or 20%) that stop a stock moving too far in one day.',
+                      'News, company results, interest rates and global markets all push demand and supply.'],
+              tryIt: { text: 'Watch the Market Watch list for a minute. Which stocks flash green and which flash red?', tab: 'terminal' } },
+            { t: '4. Reading the chart (candlesticks)',
+              why: 'Each candle shows what the price did in one time period.',
+              steps: ['The body shows open to close. Green means it closed higher than it opened; red means lower.',
+                      'The thin lines (wicks) show the highest and lowest prices reached.',
+                      'Zoom in to see recent candles in detail, zoom out to see the bigger trend. Use the right-side price scale to read exact levels.',
+                      'Always look at the bigger trend before you decide on a trade.'],
+              tryIt: { text: 'Open the chart, zoom in and out with the mouse wheel, and read a price off the Y-axis.', tab: 'terminal' } },
+            { t: '5. Place your first practice trade',
+              why: 'The best way to learn is a small, planned trade.',
+              steps: ['Pick a large-cap stock you understand. Decide the reason, your exit price if wrong (stop-loss), and your target before buying.',
+                      'Use a small size (no more than 5% of your capital on a first trade).',
+                      'Enter the quantity, check the estimated total, then execute the order.',
+                      'Open the Portfolio tab and watch the P&L. Write what you learned in the Trading Journal.'],
+              tryIt: { text: 'Go to the Terminal and place a small BUY order.', tab: 'terminal' } }
+          ]
+        },
+        strategy: {
+          title: 'Investment Strategies', intro: 'Learn the main approaches, then test one at a time in the simulator.',
+          lessons: [
+            { t: '1. Value investing',
+              why: 'Buying good businesses when their price is below what they are really worth, then holding patiently.',
+              steps: ['Look at P/E compared with the sector average. A very high P/E needs high growth to be justified.',
+                      'Prefer low debt, steady profit growth and a healthy return on equity (ROE).',
+                      'Hold for months or years. Do not react to every daily move.',
+                      'Write your reason for buying in the journal and review it when the price changes.'],
+              tryIt: { text: 'Compare HDFCBANK and ICICIBANK. Which looks better priced to you, and why?', sym: 'HDFCBANK', tab: 'terminal' } },
+            { t: '2. Swing trading',
+              why: 'Holding for a few days to a few weeks to catch one "swing" of a trend.',
+              steps: ['Find a stock in a clear trend (higher highs and higher lows for an uptrend).',
+                      'Mark support (where price tends to stop falling) and resistance (where it tends to stop rising).',
+                      'Before you enter, decide entry, stop-loss and target. Aim for at least 2 rupees of reward for every 1 rupee risked.',
+                      'If the stop-loss is hit, exit. Do not hope or move it lower.'],
+              tryIt: { text: 'Zoom out on the chart of SBIN, mark a support and resistance level, and plan a trade on paper.', sym: 'SBIN', tab: 'terminal' } },
+            { t: '3. Diversification',
+              why: 'Spreading money so that one bad stock or sector cannot ruin your portfolio.',
+              steps: ['Hold roughly 8 to 15 stocks across at least 4 to 5 different sectors.',
+                      'Keep any single stock under about 20% of your invested money.',
+                      'Do not mix too many similar stocks (for example five banks is still one sector).',
+                      'Keep some cash so you can act on opportunities.'],
+              tryIt: { text: 'Open your Portfolio and count your sectors and the share of your largest holding.', tab: 'portfolio' } },
+            { t: '4. Buying in parts (averaging)',
+              why: 'Splitting a purchase into several smaller buys reduces the risk of buying everything at a bad price.',
+              steps: ['Divide your planned amount into 3 or 4 parts and buy them on different days.',
+                      'Only add to a stock when your original reason still holds, not just because it fell.',
+                      'Set a maximum total size for the stock before you begin.'],
+              tryIt: { text: 'Plan a 3-part purchase of a stock and buy the first part.', tab: 'terminal' } }
+          ]
+        },
+        risk: {
+          title: 'Risk Management', intro: 'Protecting your capital matters more than any single winning trade.',
+          lessons: [
+            { t: '1. Position sizing (the 1% rule)',
+              why: 'Decide how much you are willing to lose on a trade first, then calculate how many shares to buy.',
+              steps: ['Risk per trade: usually 1% of capital (₹10,000 on ₹10,00,000).',
+                      'Quantity = money you will risk ÷ (entry price - stop-loss price).',
+                      'Example: entry 1000, stop-loss 950, risk ₹10,000 → 10,000 ÷ 50 = 200 shares.',
+                      'Use the calculator below to size your next trade.'],
+              tryIt: { text: 'Use the position-size calculator below with your current stock.' } },
+            { t: '2. Stop-losses',
+              why: 'A stop-loss is the price at which you accept you were wrong and exit.',
+              steps: ['Place it where your idea is clearly broken (below support), not at a random percentage.',
+                      'Decide it before you buy, and never move it further away to avoid a loss.',
+                      'Note: this simulator does not execute stop orders automatically. Check your positions in the Portfolio tab and sell manually when your stop is reached.',
+                      'Beware of placing it too tight: normal price swings can trigger it.'],
+              tryIt: { text: 'Open your Portfolio and write a stop-loss price for each holding in your journal.', tab: 'portfolio' } },
+            { t: '3. Risk-reward ratio',
+              why: 'Good trades pay more when right than they cost when wrong.',
+              steps: ['Risk-reward = (target - entry) ÷ (entry - stop-loss).',
+                      'Aim for at least 1:2. At 1:2 you can be right only 40% of the time and still make money.',
+                      'Skip trades where the reward is smaller than the risk.'],
+              tryIt: { text: 'For your next trade, compute the ratio before you press Execute.', tab: 'terminal' } },
+            { t: '4. Capital preservation rules',
+              why: 'Large losses are hard to recover from, so avoid them.',
+              steps: ['A 20% loss needs a 25% gain to get back; a 50% loss needs a 100% gain.',
+                      'Set a daily loss limit (for example 2% to 3%) and stop trading for the day if you reach it.',
+                      'Do not put more than 20% of your money in one stock.',
+                      'Keep a cash reserve (at least 10% to 20%).'],
+              tryIt: { text: 'Check how much of your net worth is in cash and in your largest stock.', tab: 'portfolio' } },
+            { t: '5. Emotions and discipline',
+              why: 'Most beginner losses come from behaviour, not from analysis.',
+              steps: ['Avoid revenge trading: do not rush into a new trade to win back a loss.',
+                      'Avoid FOMO: do not chase a stock that has already jumped sharply.',
+                      'After 3 losses in a row, pause and review your journal before trading again.',
+                      'Follow your written plan, and review it weekly.'],
+              tryIt: { text: 'Add a journal entry about your last trade: what was the plan, and did you follow it?', tab: 'profile' } }
+          ]
+        }
+      };
+
+      const GLOSSARY = [
+        ['P/E Ratio', 'Price-to-Earnings: share price ÷ earnings per share. Shows how much investors pay for ₹1 of profit. Compare it within the same sector.'],
+        ['Market Cap', 'Market capitalisation: share price × total shares. It is the market value of a company (large, mid or small cap).'],
+        ['EPS', 'Earnings Per Share: company profit ÷ number of shares. Higher and growing EPS is usually a good sign.'],
+        ['Dividend', 'A part of profit that a company pays to shareholders, usually per share.'],
+        ['Dividend Yield', 'Annual dividend ÷ share price, shown as a percentage.'],
+        ['P/B Ratio', 'Price-to-Book: share price ÷ book value per share. Often used for banks.'],
+        ['ROE', 'Return on Equity: profit as a percentage of shareholders\' money. Shows how efficiently a company uses it.'],
+        ['Book Value', 'Company assets minus liabilities, per share.'],
+        ['Bull Market', 'A period of rising prices and optimism.'],
+        ['Bear Market', 'A period of falling prices (commonly a fall of 20% or more) and pessimism.'],
+        ['Volume', 'The number of shares traded in a period. High volume means strong interest.'],
+        ['Bid / Ask', 'Bid is the best price a buyer offers; ask is the best price a seller wants. The gap is the spread.'],
+        ['Liquidity', 'How easily you can buy or sell without moving the price. Large caps are more liquid.'],
+        ['Circuit Limit', 'The maximum % a stock may rise or fall in a day, set by the exchange.'],
+        ['Nifty 50', 'The NSE index of 50 large companies. Used as a benchmark for the Indian market.'],
+        ['Sensex', 'The BSE index of 30 large companies.'],
+        ['Blue-chip', 'A large, well-established and financially strong company.'],
+        ['Volatility', 'How much and how fast a price moves. High volatility means higher risk and higher potential reward.'],
+        ['Beta', 'How much a stock moves compared with the market. Beta above 1 moves more than the market.'],
+        ['Stop-loss', 'A pre-decided price at which you exit a losing trade to limit the loss.'],
+        ['Target', 'A pre-decided price at which you plan to book profit.'],
+        ['Support', 'A price level where falling prices often stop because buyers step in.'],
+        ['Resistance', 'A price level where rising prices often stall because sellers step in.'],
+        ['Candlestick', 'A chart bar showing open, high, low and close for a time period.'],
+        ['Diversification', 'Spreading investments over different stocks and sectors to reduce risk.'],
+        ['Drawdown', 'The fall from a portfolio\'s highest value to a later low.'],
+        ['Risk-Reward Ratio', 'Potential profit compared with potential loss on a trade.'],
+        ['Intraday', 'Buying and selling within the same trading day.'],
+        ['Delivery', 'Holding shares beyond the trading day, so they are delivered to your account.'],
+        ['Square Off', 'Closing a position by doing the opposite trade (selling what you bought).'],
+        ['IPO', 'Initial Public Offering: when a company first sells its shares to the public.'],
+        ['Face Value', 'The nominal value of one share printed on the share certificate; it is not the market price.'],
+        ['Unrealized P&L', 'Profit or loss on shares you still hold. It becomes realized only when you sell.']
+      ];
+
+      /* -------- progress -------- */
+      const doneCount = k => (store.done[k] || []).length;
+      function renderCards() {
+        ['beginner', 'strategy', 'risk'].forEach(k => {
+          const el = document.getElementById('acProg-' + k);
+          if (el) el.textContent = `${doneCount(k)}/${GUIDES[k].lessons.length} lessons done`;
+        });
+        const g = document.getElementById('acProg-glossary'); if (g) g.textContent = `${GLOSSARY.length} terms`;
+      }
+      window.acToggle = function (k, i, checked) {
+        const s = new Set(store.done[k] || []); checked ? s.add(i) : s.delete(i);
+        store.done[k] = [...s]; save(); renderCards(); renderCoach();
+      };
+      window.acTry = function (sym, tab) {
+        if (sym && typeof marketData !== 'undefined' && marketData[sym]) selectSymbol(sym);
+        if (tab) switchTab(tab);
+      };
+
+      /* -------- guide panel -------- */
+      window.openGuide = function (key, idx) {
+        const panel = document.getElementById('acGuidePanel'), body = document.getElementById('acGuideBody');
+        panel.classList.remove('hidden');
+        if (key === 'glossary') {
+          document.getElementById('acGuideTitle').textContent = 'Financial Glossary';
+          document.getElementById('acGuideIntro').textContent = 'Search any term. Tip: learn P/E, Market Cap, EPS and Dividend first.';
+          body.innerHTML = `<input id="acGlossSearch" oninput="acGlossFilter()" placeholder="Search terms (e.g. P/E, dividend)..." class="w-full bg-tradeDark border border-borderDark rounded-lg px-3 py-2 text-sm text-white mb-3 outline-none focus:border-accentBlue"/><div id="acGlossList" class="grid grid-cols-1 md:grid-cols-2 gap-2"></div>`;
+          acGlossFilter();
         } else {
-          cur.qty = rem;
+          const g = GUIDES[key];
+          document.getElementById('acGuideTitle').textContent = g.title;
+          document.getElementById('acGuideIntro').textContent = g.intro;
+          const done = store.done[key] || [];
+          body.innerHTML = g.lessons.map((l, i) => `
+            <details class="border border-borderDark rounded-lg bg-tradeDark/50" ${i === (idx || 0) ? 'open' : ''}>
+              <summary class="cursor-pointer select-none p-3 flex items-center gap-3 text-sm font-semibold text-white">
+                <input type="checkbox" ${done.includes(i) ? 'checked' : ''} onclick="event.stopPropagation()" onchange="acToggle('${key}',${i}, this.checked)" title="Mark as done" class="accent-blue-500"/>
+                <span>${esc(l.t)}</span>
+              </summary>
+              <div class="px-4 pb-4 text-xs text-slate-300 space-y-3">
+                <p class="text-slate-400">${esc(l.why)}</p>
+                <ol class="list-decimal ml-5 space-y-1.5">${l.steps.map(s => `<li>${esc(s)}</li>`).join('')}</ol>
+                <div class="flex flex-wrap items-center gap-3 bg-blue-950/30 border border-blue-900/40 rounded-lg p-3">
+                  <span class="text-blue-300"><i class="fa-solid fa-flask mr-1"></i><b>Try it:</b> ${esc(l.tryIt.text)}</span>${(l.tryIt.sym || l.tryIt.tab) ? `<button onclick="acTry(${l.tryIt.sym ? `'${l.tryIt.sym}'` : 'null'}, ${l.tryIt.tab ? `'${l.tryIt.tab}'` : 'null'})" class="px-2.5 py-1 rounded bg-accentBlue text-white font-semibold">Go</button>` : ''}
+                </div>
+              </div>
+            </details>`).join('') + (key === 'risk' ? calcHTML() : '');
+          if (key === 'risk') initCalc();
         }
-        state.orders.unshift({ side: "SELL", symbol: sym, qty, price: stock.price });
-        statusEl.style.color = "#4ade80";
-        statusEl.textContent = `Sold ${qty} ${sym} @ ${formatINR(stock.price)}`;
+        panel.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      };
+      window.closeGuide = () => document.getElementById('acGuidePanel').classList.add('hidden');
+      window.acGlossFilter = function () {
+        const q = (document.getElementById('acGlossSearch')?.value || '').toLowerCase();
+        document.getElementById('acGlossList').innerHTML = GLOSSARY.filter(([t, d]) => (t + ' ' + d).toLowerCase().includes(q))
+          .map(([t, d]) => `<div class="bg-tradeDark/50 border border-borderDark rounded-lg p-3"><div class="text-sm font-bold text-yellow-300 mb-1">${esc(t)}</div><div class="text-xs text-slate-300">${esc(d)}</div></div>`).join('')
+          || '<div class="text-xs text-slate-500">No matching term.</div>';
+      };
+
+      /* -------- position size calculator -------- */
+      function calcHTML() {
+        const f = (id, label) => `<label class="text-[11px] text-slate-400">${label}<input id="${id}" type="number" step="any" oninput="acCalc()" class="mt-1 w-full bg-tradeDark border border-borderDark rounded px-2 py-1.5 text-sm text-white outline-none focus:border-accentBlue"/></label>`;
+        return `<div class="border border-borderDark rounded-lg bg-tradeDark/50 p-4 mt-3">
+          <div class="text-sm font-bold text-white mb-3"><i class="fa-solid fa-calculator text-accentBlue mr-2"></i>Position size calculator</div>
+          <div class="grid grid-cols-2 md:grid-cols-4 gap-3">${f('acCap', 'Capital (₹)')}${f('acRiskPct', 'Risk per trade (%)')}${f('acEntry', 'Entry price (₹)')}${f('acStop', 'Stop-loss price (₹)')}</div>
+          <div id="acCalcOut" class="mt-3 text-xs text-slate-300"></div></div>`;
       }
+      function initCalc() {
+        const price = (typeof marketData !== 'undefined' && marketData[activeSymbol]) ? marketData[activeSymbol].price : 1000;
+        let cap = userAccount.cash;
+        Object.entries(userAccount.holdings).forEach(([s, h]) => cap += h.quantity * ((marketData[s] && marketData[s].price) || h.avgPrice));
+        document.getElementById('acCap').value = Math.round(cap);
+        document.getElementById('acRiskPct').value = 1;
+        document.getElementById('acEntry').value = price.toFixed(2);
+        document.getElementById('acStop').value = (price * 0.95).toFixed(2);
+        acCalc();
+      }
+      window.acCalc = function () {
+        const v = id => parseFloat(document.getElementById(id).value), out = document.getElementById('acCalcOut');
+        const cap = v('acCap'), rp = v('acRiskPct'), en = v('acEntry'), st = v('acStop');
+        if (![cap, rp, en, st].every(isFinite) || cap <= 0 || rp <= 0 || en <= 0 || st <= 0) { out.textContent = 'Enter valid positive numbers.'; return; }
+        if (st >= en) { out.innerHTML = '<span class="text-rose-400">For a BUY, the stop-loss must be below the entry price.</span>'; return; }
+        const risk = cap * rp / 100, qty = Math.floor(risk / (en - st)), val = qty * en, pct = val / cap * 100;
+        out.innerHTML = `Risk amount: <b class="text-white">${inr(risk)}</b> &nbsp;|&nbsp; Quantity: <b class="text-emerald-400">${qty} shares</b> &nbsp;|&nbsp; Position value: <b class="text-white">${inr(val)}</b> (${pct.toFixed(1)}% of capital)`
+          + (pct > 20 ? '<div class="text-amber-400 mt-1">This position is over 20% of your capital. Consider a smaller size or a tighter stop-loss.</div>' : '')
+          + (val > userAccount.cash ? '<div class="text-amber-400 mt-1">You do not have enough cash for this size.</div>' : '');
+      };
 
-      state.orders = state.orders.slice(0, 20);
-      saveState();
-      render();
-    }
+      /* -------- skill coach -------- */
+      const PATHS = {
+        beginner: [['beginner', 0, 'Learn what the NSE is'], ['beginner', 1, 'Understand stock types'], ['beginner', 2, 'How pricing works'], ['beginner', 3, 'Read candlestick charts'], ['beginner', 4, 'Place a first small trade'], ['glossary', 0, 'Learn P/E, EPS, Market Cap']],
+        intermediate: [['strategy', 0, 'Try value investing'], ['strategy', 1, 'Practise swing trading'], ['strategy', 2, 'Diversify your portfolio'], ['risk', 0, 'Size every trade (1% rule)'], ['risk', 1, 'Use stop-losses'], ['risk', 2, 'Check risk-reward']],
+        advanced: [['risk', 2, 'Only take trades with 1:2 or better'], ['risk', 3, 'Apply drawdown and daily-loss limits'], ['risk', 4, 'Fix emotional mistakes'], ['strategy', 3, 'Scale into positions'], ['strategy', 2, 'Review sector balance']]
+      };
+      function analyze() {
+        const tips = [], H = userAccount.holdings, hist = userAccount.history || [];
+        const syms = Object.keys(H);
+        let hv = 0; const vals = {};
+        syms.forEach(s => { const p = (marketData[s] && marketData[s].price) || H[s].avgPrice; vals[s] = H[s].quantity * p; hv += vals[s]; });
+        const net = userAccount.cash + hv, cashPct = net ? userAccount.cash / net * 100 : 100;
+        const add = (type, text, g, i) => tips.push({ type, text, g, i });
 
-    function resetPortfolio() {
-      localStorage.removeItem(STORAGE_KEY);
-      state = loadState();
-      document.getElementById("orderStatus").textContent = "Account reset to ₹10,00,000.00.";
-      document.getElementById("orderStatus").style.color = "#94a3b8";
-      render();
-    }
-
-    async function refreshPrices() {
-      if (USE_BACKEND_QUOTES && QUOTE_API_BASE) {
-        for (const s of state.stocks) {
-          try {
-            const res = await fetch(`${QUOTE_API_BASE}/api/quote/${s.symbol}`);
-            const data = await res.json();
-            if (data && typeof data.c === "number" && data.c > 0) {
-              s.prev = s.price;
-              s.price = +data.c.toFixed(2);
-            }
-          } catch {}
+        if (hist.length === 0) add('info', 'You have not placed any trade yet. Finish the first 3 Beginner lessons, then place one small practice trade (under 5% of your capital).', 'beginner', 4);
+        if (cashPct > 95 && hist.length > 0) add('info', `${cashPct.toFixed(0)}% of your money is in cash. Cash is safe, but you also need practice. Build a plan and invest a small part.`, 'strategy', 2);
+        if (syms.length > 0 && cashPct < 10) add('warn', `Only ${cashPct.toFixed(0)}% of your money is in cash. Keep a 10% to 20% reserve so one bad day cannot force you to sell.`, 'risk', 3);
+        if (syms.length > 0) {
+          const top = syms.reduce((a, b) => vals[a] > vals[b] ? a : b), share = vals[top] / hv * 100;
+          if (syms.length >= 2 && share > 40) add('warn', `${top} is ${share.toFixed(0)}% of your invested money. Aim for less than about 20% in one stock.`, 'strategy', 2);
+          else if (syms.length === 1 && hv / net > 0.3) add('warn', `All your invested money is in one stock (${top}). Spread across more stocks and sectors.`, 'strategy', 2);
+          else if (syms.length < 5 && hv / net > 0.5) add('info', `You hold ${syms.length} stocks. Moving toward 8 to 15 across several sectors lowers risk.`, 'strategy', 2);
+          syms.forEach(s => {
+            const pct = ((((marketData[s] && marketData[s].price) || H[s].avgPrice) - H[s].avgPrice) / H[s].avgPrice) * 100;
+            if (pct <= -10) add('warn', `${s} is down ${Math.abs(pct).toFixed(1)}% from your buy price. Check your original reason. If it is broken, exit per your stop-loss instead of hoping.`, 'risk', 1);
+          });
         }
-      } else {
-        state.stocks.forEach((s) => {
-          s.prev = s.price;
-          const deltaPct = (Math.random() - 0.48) * 0.02;
-          s.price = Math.max(5, +(s.price * (1 + deltaPct)).toFixed(2));
+        const pos = {}, wins = [], losses = [];
+        [...hist].reverse().forEach(t => {
+          const p = pos[t.symbol] || (pos[t.symbol] = { q: 0, c: 0 });
+          if (t.type === 'BUY') { p.c = (p.c * p.q + t.price * t.quantity) / (p.q + t.quantity); p.q += t.quantity; }
+          else { const pl = (t.price - p.c) * t.quantity; (pl >= 0 ? wins : losses).push(pl); p.q -= t.quantity; }
+        });
+        const closed = wins.length + losses.length;
+        if (closed >= 3) {
+          const wr = wins.length / closed * 100;
+          const aw = wins.length ? wins.reduce((a, b) => a + b, 0) / wins.length : 0;
+          const al = losses.length ? Math.abs(losses.reduce((a, b) => a + b, 0) / losses.length) : 0;
+          if (al > aw && losses.length) add('warn', `Your average loss (${inr(al)}) is bigger than your average win (${inr(aw)}). Cut losing trades sooner and let winners run.`, 'risk', 2);
+          else if (wr < 40) add('info', `Your win rate is ${wr.toFixed(0)}%. That can still be profitable if wins are at least twice the losses. Check your risk-reward ratio.`, 'risk', 2);
+          else add('good', `Good work: ${wr.toFixed(0)}% of your closed trades were profitable. Keep sizing each trade and journal your reasons.`, 'risk', 0);
+        } else if (hist.length > 0) add('info', `You have ${closed} closed trade(s). Complete at least 10 and review them in the Journal to learn your real strengths.`, 'strategy', 1);
+        const dayAgo = Date.now() - 864e5;
+        const recent = hist.filter(t => { const d = new Date(t.time).getTime(); return isFinite(d) && d > dayAgo; }).length;
+        if (recent > 10) add('warn', `${recent} trades in the last 24 hours. Frequent trading often adds mistakes. Trade only your planned setups.`, 'risk', 4);
+        if (!tips.length) add('good', 'Your portfolio looks balanced. Next, test one strategy for a week and note the results in your journal.', 'strategy', 0);
+        return tips;
+      }
+      function renderCoach() {
+        const lv = document.getElementById('acLevelBtns'); if (!lv) return;
+        lv.innerHTML = ['beginner', 'intermediate', 'advanced'].map(l =>
+          `<button onclick="acSetLevel('${l}')" class="px-3 py-1.5 rounded-lg capitalize ${store.level === l ? 'bg-accentBlue text-white' : 'text-slate-400 hover:text-white border border-borderDark'}">${l}</button>`).join('');
+        document.getElementById('acPath').innerHTML = `<h4 class="text-xs font-bold uppercase tracking-wider text-slate-400 mb-2">Your ${esc(store.level)} learning path</h4><ol class="space-y-1">` +
+          PATHS[store.level].map(([g, i, label]) => {
+            const ok = g !== 'glossary' && (store.done[g] || []).includes(i);
+            return `<li><button onclick="${g === 'glossary' ? "openGuide('glossary')" : `openGuide('${g}', ${i})`}" class="w-full text-left text-xs px-3 py-2 rounded-lg bg-tradeDark/50 border border-borderDark hover:border-accentBlue ${ok ? 'text-emerald-400' : 'text-slate-300'}"><i class="fa-${ok ? 'solid fa-circle-check' : 'regular fa-circle'} mr-2"></i>${esc(label)}</button></li>`;
+          }).join('') + '</ol>';
+        const col = { warn: 'border-amber-800/50 bg-amber-950/20 text-amber-300', info: 'border-blue-900/50 bg-blue-950/20 text-blue-300', good: 'border-emerald-800/50 bg-emerald-950/20 text-emerald-300' };
+        const ic = { warn: 'fa-triangle-exclamation', info: 'fa-circle-info', good: 'fa-circle-check' };
+        document.getElementById('acCoachTips').innerHTML = analyze().map(t =>
+          `<div class="border rounded-lg p-3 text-xs ${col[t.type]}"><i class="fa-solid ${ic[t.type]} mr-2"></i>${esc(t.text)}<div class="mt-2"><button onclick="openGuide('${t.g}',${t.i})" class="underline text-slate-200 hover:text-white">Open the related lesson</button></div></div>`).join('');
+      }
+      window.acSetLevel = l => { store.level = l; save(); renderCoach(); };
+
+      /* -------- news -------- */
+      window.acNewsMode = 'mine'; window.acNewsSym = '';
+      const POS = /\b(surge|jump|gain|rally|rise|rises|record|beat|beats|profit|growth|upgrade|buy|strong|wins|order win|soar)/i;
+      const NEG = /\b(fall|falls|drop|plunge|slump|loss|losses|miss|downgrade|sell|weak|probe|fraud|penalty|decline|cut|crash|concern)/i;
+      function ago(d) { const m = Math.floor((Date.now() - new Date(d)) / 60000); if (!isFinite(m)) return ''; if (m < 60) return Math.max(m, 1) + ' min ago'; if (m < 1440) return Math.floor(m / 60) + ' h ago'; return Math.floor(m / 1440) + ' d ago'; }
+      function setupNewsUI() {
+        const sel = document.getElementById('acNewsSelect');
+        sel.innerHTML = '<option value="">Choose a stock...</option>' + Object.keys(marketData).sort().map(s => `<option value="${s}">${s}</option>`).join('');
+        ['mine', 'market'].forEach(m => {
+          const b = document.getElementById('acNewsBtn-' + m);
+          b.className = 'px-3 py-1.5 rounded-lg ' + (acNewsMode === m ? 'bg-accentBlue text-white' : 'text-slate-400 hover:text-white border border-borderDark');
         });
       }
-      saveState();
-      render();
-    }
+      window.acLoadNews = async function (mode, sym) {
+        acNewsMode = mode || 'mine'; if (sym !== undefined) acNewsSym = sym;
+        setupNewsUI();
+        const list = document.getElementById('acNewsList');
+        let q;
+        if (acNewsMode === 'market') q = 'market=1';
+        else if (acNewsMode === 'sym') { if (!acNewsSym) { list.innerHTML = '<div class="text-xs text-slate-500">Pick a stock from the list.</div>'; return; } q = 'symbols=' + encodeURIComponent(acNewsSym); }
+        else {
+          const mine = [...new Set([...Object.keys(userAccount.holdings), activeSymbol])].slice(0, 5);
+          q = 'symbols=' + encodeURIComponent(mine.join(','));
+        }
+        list.innerHTML = '<div class="text-xs text-slate-500"><i class="fa-solid fa-spinner fa-spin mr-1"></i>Loading news...</div>';
+        try {
+          const res = await fetch(`${API_BASE_URL}/news?${q}`);
+          if (!res.ok) throw new Error('bad status');
+          const data = await res.json();
+          if (!data.items || !data.items.length) { list.innerHTML = '<div class="text-xs text-slate-500">No recent headlines found.</div>'; return; }
+          list.innerHTML = data.items.map(n => {
+            const tone = POS.test(n.title) && !NEG.test(n.title) ? ['Positive tone', 'text-emerald-400 border-emerald-800/50'] : NEG.test(n.title) && !POS.test(n.title) ? ['Negative tone', 'text-rose-400 border-rose-800/50'] : ['Neutral', 'text-slate-400 border-borderDark'];
+            const safe = /^https?:\/\//i.test(n.link) ? n.link : '#';
+            return `<a href="${esc(safe)}" target="_blank" rel="noopener noreferrer" class="block p-3 rounded-lg bg-tradeDark/50 border border-borderDark hover:border-accentBlue">
+              <div class="text-xs text-white font-semibold">${esc(n.title)}</div>
+              <div class="flex flex-wrap items-center gap-2 mt-1.5 text-[10px] text-slate-500">
+                ${n.symbol ? `<span class="px-1.5 py-0.5 rounded bg-blue-950 text-blue-300 font-mono">${esc(n.symbol)}</span>` : ''}
+                <span>${esc(n.source || '')}</span><span>${esc(ago(n.pubDate))}</span>
+                <span class="px-1.5 py-0.5 rounded border ${tone[1]}" title="Headline tone is only a hint, not a price prediction">${tone[0]}</span>
+              </div></a>`;
+          }).join('');
+        } catch (e) {
+          list.innerHTML = '<div class="text-xs text-amber-400">Could not load news right now. Please try refreshing in a few seconds.</div>';
+        }
+      };
 
-    function render() {
-      const sel = document.getElementById("symSelect");
-      const prevSym = sel.value;
-      sel.innerHTML = state.stocks
-        .map((s) => `<option value="${s.symbol}">${s.symbol} — ${formatINR(s.price)}</option>`)
-        .join("");
-      if (prevSym && state.stocks.some((s) => s.symbol === prevSym)) {
-        sel.value = prevSym;
-      }
-      updateEstimate();
-
-      document.getElementById("marketBody").innerHTML = state.stocks
-        .map((s) => {
-          const diff = s.price - s.prev;
-          const pct = s.prev ? ((diff / s.prev) * 100).toFixed(2) : "0.00";
-          const cls = diff >= 0 ? "up" : "down";
-          const sign = diff >= 0 ? "+" : "";
-          return `
-            <tr>
-              <td><strong>${s.symbol}</strong></td>
-              <td>${s.name}</td>
-              <td>${formatINR(s.price)}</td>
-              <td class="${cls}">${sign}${diff.toFixed(2)} (${sign}${pct}%)</td>
-              <td><button type="button" class="pick-btn" onclick="selectSymbol('${s.symbol}')">Select</button></td>
-            </tr>
-          `;
-        })
-        .join("");
-
-      let totalHoldings = 0;
-      const holdingEntries = Object.entries(state.holdings);
-      document.getElementById("holdingsBody").innerHTML = holdingEntries.length
-        ? holdingEntries.map(([sym, h]) => {
-            const stock = state.stocks.find((s) => s.symbol === sym);
-            const curPrice = stock ? stock.price : h.avgPrice;
-            const curValue = curPrice * h.qty;
-            totalHoldings += curValue;
-            const pnl = (curPrice - h.avgPrice) * h.qty;
-            const cls = pnl >= 0 ? "up" : "down";
-            const sign = pnl >= 0 ? "+" : "";
-            return `
-              <tr>
-                <td><strong>${sym}</strong></td>
-                <td>${h.qty}</td>
-                <td>${formatINR(h.avgPrice)}</td>
-                <td>${formatINR(curValue)}</td>
-                <td class="${cls}">${sign}${formatINR(pnl)}</td>
-              </tr>
-            `;
-          }).join("")
-        : `<tr><td colspan="5" class="muted-row">No holdings yet. Place a BUY order to start.</td></tr>`;
-
-      document.getElementById("ordersBody").innerHTML = state.orders.length
-        ? state.orders.map((o) => `
-            <tr>
-              <td class="${o.side === "BUY" ? "up" : "down"}"><strong>${o.side}</strong></td>
-              <td>${o.symbol}</td>
-              <td>${o.qty}</td>
-              <td>${formatINR(o.price)}</td>
-            </tr>
-          `).join("")
-        : `<tr><td colspan="4" class="muted-row">No orders placed yet.</td></tr>`;
-
-      document.getElementById("cashVal").textContent = formatINR(state.cash);
-      document.getElementById("holdingsVal").textContent = formatINR(totalHoldings);
-      document.getElementById("netWorthVal").textContent = formatINR(state.cash + totalHoldings);
-    }
-
-    render();
-    setInterval(refreshPrices, 4000);
+      /* -------- hooks -------- */
+      const origSwitch = window.switchTab;
+      window.switchTab = function (t) { origSwitch(t); if (t === 'academy') { renderCards(); renderCoach(); acLoadNews(acNewsMode, acNewsSym); } };
+      renderCards(); renderCoach(); setupNewsUI();
+    })();
   </script>
 </body>
 </html>
